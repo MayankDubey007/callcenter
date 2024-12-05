@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Center Dialogues</title>
+
+    <!-- Link to Bootstrap 5 CSS for layout and button styles -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f6f9;
+            padding-top: 50px;
+        }
+
+        .list-group-item {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            border: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-group {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .dropdown-menu {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-item {
+            font-size: 16px;
+        }
+
+        .list-group {
+            margin: 0 auto;
+            max-width: 800px;
+            padding: 10px;
+        }
+
+        .header {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Call Center Dialogues</h1>
+            <p>Click the button to read the lines in Hindi or English</p>
+        </div>
+    
+        <div class="list-group">
+            {% for book in page_obj %}
+            <div class="btn-group d-flex justify-content-between mb-3">
+                <!-- Button to read Line (includes index) -->
+                <button type="button" class="btn btn-danger" onclick="speakText('line{{ forloop.counter }}')" title="{{ book.chindi }}">
+                    Read Line {{ forloop.counter }}
+                </button>
+    
+                <!-- Hindi Dropdown (with index) -->
+                <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Hindi {{ forloop.counter }}
+                </button>
+                <ul class="dropdown-menu">
+                    <li><p class="dropdown-item" id="line{{ forloop.counter }}">{{ book.chindi }}</p></li>
+                </ul>
+    
+                <!-- English Dropdown (with index) -->
+                <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    English {{ forloop.counter }}
+                </button>
+                <ul class="dropdown-menu">
+                    <li><p class="dropdown-item" id="line{{ forloop.counter }}">{{ book.cenglish }}</p></li>
+                </ul>
+    
+                <!-- Update Button (Redirects to update page) -->
+                <a href="{% url 'update_book' book.id %}" class="btn btn-warning">Update</a>
+            </div>
+            {% endfor %}
+        </div>
+    
+        <!-- Pagination Controls -->
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+    
+                <li class="page-item active">
+                    <span class="page-link">{{ page_obj.number }}</span>
+                </li>
+    
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    
+    
+
+    <!-- Bootstrap JS and Popper.js (for dropdowns) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <!-- JavaScript for Text-to-Speech -->
+    <script>
+        function speakText(lineId) {
+            var lineElement = document.getElementById(lineId);
+
+            if (lineElement) {
+                var textToSpeak = lineElement.textContent || lineElement.innerText;
+                var utterance = new SpeechSynthesisUtterance(textToSpeak);
+
+                // Set the language to Hindi (India)
+                utterance.lang = 'hi-IN'; // For Hindi (India)
+
+                // Speak the text
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+    </script>
+</body>
+
+</html>
